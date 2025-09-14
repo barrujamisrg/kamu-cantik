@@ -164,13 +164,16 @@
 
         setTimeout(typeLine, 0);
         // Autoplay workaround untuk browser yang membatasi autoplay
-        window.addEventListener('click', function playMusicOnce() {
+        function playMusicOnce() {
             const audio = document.getElementById('bg-music');
             if (audio) {
                 audio.play();
             }
             window.removeEventListener('click', playMusicOnce);
-        });
+            window.removeEventListener('touchstart', playMusicOnce);
+        }
+        window.addEventListener('click', playMusicOnce);
+        window.addEventListener('touchstart', playMusicOnce);
     </script>
 </body>
 </html>
