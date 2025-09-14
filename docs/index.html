@@ -134,6 +134,47 @@
         let charIndex = 0;
         const display = document.getElementById('text');
 
+         // Tambahkan kode audio di sini
+        const audio = new Audio('assets/kamu-cantik.mp3');
+        const playButton = document.getElementById('playButton');
+
+        function typeLine() {
+            if (index >= lyrics.length) {
+                // Saat lirik habis, mulai dari awal lagi (untuk looping)
+                index = 0;
+                charIndex = 0;
+                display.textContent = '';
+                setTimeout(typeLine, 0);
+                return;
+            }
+
+            const line = lyrics[index];
+            const config = settings[index];
+
+            if (charIndex < line.length) {
+                display.textContent += line.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeLine, config.speed);
+            } else {
+                index++;
+                charIndex = 0;
+                setTimeout(() => {
+                    display.textContent = '';
+                    typeLine();
+                }, config.delay);
+            }
+        }
+
+        // Mulai play audio dan lirik saat tombol diklik
+        playButton.addEventListener('click', () => {
+            playButton.style.display = 'none'; // Sembunyikan tombol setelah diklik
+            audio.loop = true; // Mengatur agar audio berulang
+            audio.play();
+            typeLine();
+        });
+    </script>
+
+
         function typeLine() {
             if (index >= lyrics.length) {
                 display.textContent = "<3";
