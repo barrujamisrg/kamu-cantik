@@ -98,16 +98,19 @@
     <div id="lyrics"><span id="text"></span><span class="cursor">|</span></div>
 
     <script>
+        // Logika kontrol jendela (dari Electron)
         document.getElementById('home-btn').addEventListener('click', () => {
             location.reload();
         });
+        // electronAPI hanya akan bekerja di aplikasi desktop, tidak di website
         document.getElementById('max-btn').addEventListener('click', () => {
-            window.electronAPI.sendWindowControl('maximize');
+            console.log('Maximize button clicked');
         });
         document.getElementById('close-btn').addEventListener('click', () => {
-            window.electronAPI.sendWindowControl('close');
+            console.log('Close button clicked');
         });
 
+        // Data lirik dan pengaturan
         const lyrics = [
             "Karena kamu cantik",
             "Kan ku beri segalanya apa yang ku punya",
@@ -133,18 +136,17 @@
         let index = 0;
         let charIndex = 0;
         const display = document.getElementById('text');
-
-         // Tambahkan kode audio di sini
         const audio = new Audio('assets/kamu-cantik.mp3');
-        const playButton = document.getElementById('playButton');
 
         function typeLine() {
             if (index >= lyrics.length) {
-                // Saat lirik habis, mulai dari awal lagi (untuk looping)
+                // Lirik selesai, mulai dari awal lagi
+                audio.currentTime = 0;
+                audio.play();
                 index = 0;
                 charIndex = 0;
                 display.textContent = '';
-                setTimeout(typeLine, 0);
+                typeLine();
                 return;
             }
 
@@ -165,40 +167,11 @@
             }
         }
 
-        // Mulai play audio dan lirik saat tombol diklik
-        playButton.addEventListener('click', () => {
-            playButton.style.display = 'none'; // Sembunyikan tombol setelah diklik
-            audio.loop = true; // Mengatur agar audio berulang
+        // Mulai memutar musik dan lirik secara otomatis saat halaman dimuat
+        window.onload = () => {
+            audio.loop = true;
             audio.play();
-            typeLine();
-        });
-    </script>
-
-
-        function typeLine() {
-            if (index >= lyrics.length) {
-                display.textContent = "<3";
-                return;
-            }
-
-            const line = lyrics[index];
-            const config = settings[index];
-
-            if (charIndex < line.length) {
-                display.textContent += line.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeLine, config.speed);
-            } else {
-                index++;
-                charIndex = 0;
-                setTimeout(() => {
-                    display.textContent = '';
-                    typeLine();
-                }, config.delay);
-            }
-        }
-
-        setTimeout(typeLine, 0);
+            setTimeout(typeLine, 1500); // Mulai lirik setelah 1.5 detik
+        };
     </script>
 </body>
-</html>
