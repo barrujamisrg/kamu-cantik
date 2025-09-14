@@ -97,20 +97,19 @@
 
     <div id="lyrics"><span id="text"></span><span class="cursor">|</span></div>
 
+    <audio id="bg-music" src="assets/kamu-cantik.mp3" autoplay loop></audio>
+
     <script>
-        // Logika kontrol jendela (dari Electron)
         document.getElementById('home-btn').addEventListener('click', () => {
             location.reload();
         });
-        // electronAPI hanya akan bekerja di aplikasi desktop, tidak di website
         document.getElementById('max-btn').addEventListener('click', () => {
-            console.log('Maximize button clicked');
+            window.electronAPI.sendWindowControl('maximize');
         });
         document.getElementById('close-btn').addEventListener('click', () => {
-            console.log('Close button clicked');
+            window.electronAPI.sendWindowControl('close');
         });
 
-        // Data lirik dan pengaturan
         const lyrics = [
             "Karena kamu cantik",
             "Kan ku beri segalanya apa yang ku punya",
@@ -136,17 +135,13 @@
         let index = 0;
         let charIndex = 0;
         const display = document.getElementById('text');
-        const audio = new Audio('assets/kamu-cantik.mp3');
+
+        
+
 
         function typeLine() {
             if (index >= lyrics.length) {
-                // Lirik selesai, mulai dari awal lagi
-                audio.currentTime = 0;
-                audio.play();
-                index = 0;
-                charIndex = 0;
-                display.textContent = '';
-                typeLine();
+                display.textContent = "<3";
                 return;
             }
 
@@ -167,11 +162,15 @@
             }
         }
 
-        // Mulai memutar musik dan lirik secara otomatis saat halaman dimuat
-        window.onload = () => {
-            audio.loop = true;
-            audio.play();
-            setTimeout(typeLine, 1500); // Mulai lirik setelah 1.5 detik
-        };
+        setTimeout(typeLine, 0);
+        // Autoplay workaround untuk browser yang membatasi autoplay
+        window.addEventListener('click', function playMusicOnce() {
+            const audio = document.getElementById('bg-music');
+            if (audio) {
+                audio.play();
+            }
+            window.removeEventListener('click', playMusicOnce);
+        });
     </script>
 </body>
+</html>
