@@ -110,62 +110,52 @@
             window.electronAPI.sendWindowControl('close');
         });
 
+        // Lirik dan timestamp (detik) kapan lirik muncul
         const lyrics = [
-            "Karena kamu cantik",
-            "Kan ku beri segalanya apa yang ku punya",
-            "Dan hatimu baik",
-            "Sempurnalah duniaku saat kau disisiku",
-            "Bukan karena make up di wajahmu",
-            "Atau lipstik merah itu",
-            "Lembut hati tutur kata",
-            "Terciptalah cinta yang ku puja"
+            { time: 0.0, text: "Karena kamu cantik" },
+            { time: 3.5, text: "Kan ku beri segalanya apa yang ku punya" },
+            { time: 8.0, text: "Dan hatimu baik" },
+            { time: 11.0, text: "Sempurnalah duniaku saat kau disisiku" },
+            { time: 16.0, text: "Bukan karena make up di wajahmu" },
+            { time: 19.5, text: "Atau lipstik merah itu" },
+            { time: 23.0, text: "Lembut hati tutur kata" },
+            { time: 26.0, text: "Terciptalah cinta yang ku puja" }
         ];
 
-        const settings = [
-            { delay: 1300, speed: 90 },
-            { delay: 400, speed: 90 },
-            { delay: 1200, speed: 115 },
-            { delay: 10, speed: 110 },
-            { delay: 400, speed: 90 },
-            { delay: 1100, speed: 95 },
-            { delay: 400, speed: 100 },
-            { delay: 1000, speed: 95 }
-        ];
-
-        let index = 0;
-        let charIndex = 0;
         const display = document.getElementById('text');
+        const audio = document.getElementById('bg-music');
+        let currentLyric = -1;
 
-        
-
-
-        function typeLine() {
-            if (index >= lyrics.length) {
-                display.textContent = "<3";
-                return;
+        function updateLyric() {
+            if (!audio || !lyrics.length) return;
+            const t = audio.currentTime;
+            let idx = lyrics.length - 1;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (t < lyrics[i].time) {
+                    idx = i - 1;
+                    break;
+                }
             }
-
-            const line = lyrics[index];
-            const config = settings[index];
-
-            if (charIndex < line.length) {
-                display.textContent += line.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeLine, config.speed);
-            } else {
-                index++;
-                charIndex = 0;
-                setTimeout(() => {
-                    display.textContent = '';
-                    typeLine();
-                }, config.delay);
+            if (idx !== currentLyric && idx >= 0) {
+                display.textContent = lyrics[idx].text;
+                currentLyric = idx;
+            } else if (idx < 0) {
+                display.textContent = '';
+                currentLyric = -1;
             }
         }
 
-        setTimeout(typeLine, 0);
+        audio.addEventListener('timeupdate', updateLyric);
+        audio.addEventListener('seeked', updateLyric);
+        audio.addEventListener('play', updateLyric);
+        audio.addEventListener('ended', function() {
+            display.textContent = '<3';
+            currentLyric = -1;
+        });
+        // Inisialisasi lirik saat audio siap
+        audio.addEventListener('loadedmetadata', updateLyric);
         // Autoplay workaround untuk browser yang membatasi autoplay
         function playMusicOnce() {
-            const audio = document.getElementById('bg-music');
             if (audio) {
                 audio.play();
             }
