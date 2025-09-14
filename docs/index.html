@@ -116,15 +116,25 @@
             { time: 3.5, text: "Kan ku beri segalanya apa yang ku punya" },
             { time: 8.0, text: "Dan hatimu baik" },
             { time: 11.0, text: "Sempurnalah duniaku saat kau disisiku" },
-            { time: 16.0, text: "Bukan karena make up di wajahmu" },
-            { time: 19.5, text: "Atau lipstik merah itu" },
-            { time: 23.0, text: "Lembut hati tutur kata" },
-            { time: 26.0, text: "Terciptalah cinta yang ku puja" }
+            { time: 35.0, text: "Bukan karena make up di wajahmu" },
+            { time: 39.5, text: "Atau lipstik merah itu" },
+            { time: 43.0, text: "Lembut hati tutur kata" },
+            { time: 47.0, text: "Terciptalah cinta yang ku puja" }
         ];
 
         const display = document.getElementById('text');
         const audio = document.getElementById('bg-music');
         let currentLyric = -1;
+
+
+        let typewriterTimeout = null;
+        function typeLyric(text, i = 0) {
+            if (typewriterTimeout) clearTimeout(typewriterTimeout);
+            if (i <= text.length) {
+                display.textContent = text.slice(0, i);
+                typewriterTimeout = setTimeout(() => typeLyric(text, i + 1), 40);
+            }
+        }
 
         function updateLyric() {
             if (!audio || !lyrics.length) return;
@@ -137,7 +147,7 @@
                 }
             }
             if (idx !== currentLyric && idx >= 0) {
-                display.textContent = lyrics[idx].text;
+                typeLyric(lyrics[idx].text);
                 currentLyric = idx;
             } else if (idx < 0) {
                 display.textContent = '';
